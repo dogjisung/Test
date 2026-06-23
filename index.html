@@ -2,7 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!-- 모바일 전체화면 및 확대 방지 설정 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- 모바일 주소창 제거를 위한 홈화면 앱(PWA) 세팅 -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    
     <title>🏛️ 포미토이 미니 쿠지판</title>
     <style>
         /* 고급 경매장 VIP 다크 골드 테마 컬러 세팅 */
@@ -20,7 +27,7 @@
             color: var(--color-platinum);
             font-family: 'Malgun Gothic', sans-serif;
             margin: 0;
-            padding: 15px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -30,6 +37,10 @@
             text-size-adjust: none;
             -webkit-user-select: none;
             user-select: none;
+            
+            /* 아이폰 상단 노치 디자인 여백 대응 */
+            padding-top: calc(10px + env(safe-area-inset-top));
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
 
         .view {
@@ -47,7 +58,7 @@
         /* --- [메인 화면 타이틀 스타일] --- */
         .main-title-frame {
             text-align: center;
-            margin: 60px 0 40px 0;
+            margin: 40px 0 30px 0;
             width: 100%;
         }
         .main-title-icon {
@@ -61,7 +72,7 @@
             justify-content: center;
             gap: 8px;
             color: var(--color-gold);
-            font-size: 32px;
+            font-size: 30px;
             font-weight: bold;
             margin: 0;
         }
@@ -77,7 +88,7 @@
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
         }
         .menu-box {
             background-color: var(--bg-card);
@@ -91,7 +102,7 @@
             background-color: var(--bg-card);
             color: var(--color-platinum);
             border: none;
-            padding: 18px 0;
+            padding: 16px 0;
             font-size: 16px;
             font-weight: bold;
             border-radius: 4px;
@@ -113,7 +124,7 @@
             font-size: 20px;
             font-weight: bold;
             color: var(--color-gold);
-            margin: 40px 0 30px 0;
+            margin: 30px 0 20px 0;
             text-align: center;
         }
         .config-list {
@@ -121,7 +132,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
         .sub-config-view {
             width: 100%;
@@ -145,7 +156,7 @@
         }
         .scroll-container {
             width: 100%;
-            max-height: 50vh;
+            max-height: 55vh;
             overflow-y: auto;
             margin-bottom: 20px;
         }
@@ -178,24 +189,25 @@
             user-select: auto;
         }
 
-        /* --- [인게임 가챠판 화면 서식 - 대형 크기 스크롤 최적화] --- */
+        /* --- [인게임 가챠판 화면 서식] --- */
         .game-title-container {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
             color: var(--color-gold);
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
-            margin-top: 25px;
-            margin-bottom: 15px;
+            margin-top: 15px;
+            margin-bottom: 10px;
         }
         
-        /* 개수가 많아도 화면이 터지지 않도록 스크롤 영역을 분리 */
+        /* 쿠지판 영역 세로 스크롤 대응 및 높이 확장 */
         .board-wrapper {
             width: 100%;
-            max-height: 55vh; /* 쿠지판 종이들이 들어가는 박스 높이 제한 */
-            overflow-y: auto; /* 넘치면 부드럽게 세로 스크롤 생성 */
+            height: calc(100vh - 240px);
+            min-height: 350px;
+            overflow-y: auto;
             padding-right: 5px;
             box-sizing: border-box;
             border: 1px solid #1C1C1E;
@@ -203,24 +215,23 @@
             background-color: #0D0D0E;
         }
 
-        /* 묻지도 따지지도 않고 무조건 한 줄에 딱 4개만 왕따시만하게 배치 */
+        /* 무조건 한 줄에 딱 4개 고정하여 큼직하게 노출 */
         .grid-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px; /* 종이끼리 여백도 널널하게 */
+            gap: 10px;
             width: 100%;
-            padding: 15px 10px;
+            padding: 12px 8px;
             box-sizing: border-box;
         }
         
-        /* 쿠지판 개별 종이 버튼 크기를 엄청 크게 키움 */
         .box-btn {
             background-color: var(--bg-card);
             color: var(--color-gold);
             border: 1.5px solid #3A3A3C;
             border-radius: 10px;
             aspect-ratio: 1 / 1;
-            font-size: 15px; /* 글씨 크기 확대 */
+            font-size: 15px;
             font-weight: bold;
             display: flex;
             flex-direction: column;
@@ -233,10 +244,9 @@
             padding: 5px;
         }
 
-        /* 티켓 및 이모지 아이콘 대폭 확대 */
         .box-btn-icon {
-            font-size: 24px; /* 눈에 띄게 큰 아이콘 */
-            margin-bottom: 4px;
+            font-size: 22px;
+            margin-bottom: 3px;
         }
 
         .box-btn:active {
@@ -256,22 +266,22 @@
             color: var(--color-gold);
             border-color: var(--color-gold);
             background-color: #241E15;
-            font-size: 13px; /* 당첨 등수 글자 안 잘리도록 세팅 */
+            font-size: 13px;
         }
 
-        /* 하단 고정 조작부 */
+        /* 하단 조작부 */
         .bottom-container {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-            margin-bottom: 25px;
+            gap: 8px;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
         .action-btn {
             border: none;
-            padding: 16px;
-            font-size: 16px;
+            padding: 14px;
+            font-size: 15px;
             font-weight: bold;
             border-radius: 8px;
             cursor: pointer;
@@ -352,13 +362,10 @@
             <span>🏛️</span>
         </div>
 
-        <!-- 감싸는 스크롤 박스 추가 -->
         <div class="board-wrapper">
-            <!-- 무조건 가로 4열 고정 그리드 보드 -->
             <div class="grid-container" id="gachaBoard"></div>
         </div>
 
-        <!-- 하단 조작부 -->
         <div class="bottom-container">
             <button class="action-btn gold" onclick="playRandomGacha()">🎲 랜덤 가챠</button>
             <button class="action-btn gold" style="background-color: #4A3B2C; color: var(--color-gold); border: 1px solid var(--color-gold);" onclick="saveGameToFile()">💾 현재 상태 저장</button>
@@ -542,7 +549,6 @@
             revealedIndices = [];
         }
 
-        // 고정 4열 스크롤 보드 생성
         function renderBoard() {
             const boardEl = document.getElementById("gachaBoard");
             boardEl.innerHTML = "";
@@ -584,6 +590,7 @@
             }, 100);
         }
 
+        // [최종 반영] 97%의 높은 확률로 꽝 유도 로직 적용
         function playRandomGacha() {
             let unopened = [];
             for(let i=0; i<totalCount; i++) {
@@ -599,7 +606,7 @@
             let rewards = unopened.filter(i => gameBoard[i] !== "꽝");
             
             let chosen;
-            if(blanks.length > 0 && rewards.length > 0 && Math.random() < 0.92) {
+            if(blanks.length > 0 && rewards.length > 0 && Math.random() < 0.97) {
                 chosen = blanks[Math.floor(Math.random() * blanks.length)];
             } else {
                 chosen = unopened[Math.floor(Math.random() * unopened.length)];
